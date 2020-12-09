@@ -14,9 +14,12 @@ logger.addHandler(handler)
 
 
 HOSTS = ['boxily.com', '192.168.4.1']
+DB_STR = 'dbname=pi'
+SLEEP_DURATION = 1  # seconds
+
 
 def main():
-    conn = psycopg2.connect('dbname=pi')
+    conn = psycopg2.connect(DB_STR)
     cur = conn.cursor()
     while True:
         start = time.time()
@@ -29,7 +32,7 @@ def main():
                 logger.info("%s %s %s", host, resp.is_alive, resp.max_rtt)
                 cur.execute("INSERT INTO pings (host, is_alive, duration) VALUES (%s, %s, %s)", (host, resp.is_alive, resp.max_rtt))
         conn.commit()
-        time.sleep(max(0, 1 - (time.time() - start)))
+        time.sleep(max(0, SLEEP_DURATION - (time.time() - start)))
 
 
 if __name__ == '__main__':
